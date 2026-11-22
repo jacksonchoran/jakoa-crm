@@ -1,0 +1,21 @@
+{
+  "name": "jakoa-crm",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Private CRM for Productions Jakoa",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "doctor": "node scripts/doctor/cli.ts",
+    "env:example": "node scripts/doctor/env-example.ts > .env.example",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12"
+  }
+}
