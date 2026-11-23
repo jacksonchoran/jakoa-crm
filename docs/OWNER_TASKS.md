@@ -24,7 +24,7 @@ Last checked against the vendors' current documentation: 22 November 2026.
     1. Create an account with info@jakoa.ca and a long master password you write down and keep at home.
     2. Turn on two step login: **Settings**, **Security**, **Two step login**, choose **Authenticator app** (or a passkey).
     3. Click **New organization**, name it "Productions Jakoa", choose the **Free** plan (two people).
-    4. In the organization, **Members**, **Invite member**, enter noah@jakoa.ca, role **Admin**. Noah accepts from his email and sets up his own two step login.
+    4. In the organization, **Members**, **Invite member**, enter noah@jakoa.ca, role **Admin**. Noah accepts from the invite email and sets up two step login on that account.
     5. Create a collection named "Jakoa CRM". Every value in this file goes there, named "Jakoa CRM / <what it is>".
   * Produces: a shared vault. Goes to: used by every item below.
 
@@ -52,7 +52,7 @@ Last checked against the vendors' current documentation: 22 November 2026.
     4. In the new organization click **New project**: name `jakoa-crm-production`; **Database password**: click **Generate a password**, copy it into the password manager as "Jakoa CRM / Supabase production database password"; **Region**: **Canada (Central)** (this is AWS `ca-central-1`, which is in Montreal); compute size **Micro**. If you see an option to turn on Row Level Security automatically for new tables, turn it on. Click **Create new project**.
     5. **Organization settings**, **Billing**: leave **Spend cap** on. Set the billing email to info@jakoa.ca.
     6. **Organization settings**, **Team**, **Invite**: noah@jakoa.ca with role **Owner** (so Noah can run everything without Jackson). Noah accepts and turns on multi factor authentication too.
-    7. If **Organization settings**, **Security** offers **Require MFA**, turn it on once Noah has set his up.
+    7. If **Organization settings**, **Security** offers **Require MFA**, turn it on once Noah has set up multi factor authentication.
   * Produces: the database password (now) and, later, the project URL, keys and connection string, which you copy in VC2 directly from the dashboard. Goes to: password manager now; Vercel in VC2.
 
 * [ ] **TW1** Twilio: create the account under info@jakoa.ca with two factor
@@ -163,6 +163,15 @@ Last checked against the vendors' current documentation: 22 November 2026.
     1. Name `jakoa-crm-staging`, generate and store a new database password ("Jakoa CRM / Supabase staging database password"), region **Canada (Central)**, compute **Micro**, Row Level Security on by default if offered.
     2. This project also hosts the monthly restore drill's temporary copy. The drill creates a scratch schema, checks it and deletes it.
   * Produces: the staging URL, keys and connection string. Goes to: Vercel (Preview) in VC2, and `RESTORE_DRILL_DB_URL` (Production) in VC2.
+
+* [ ] **SB3** Supabase: let GitHub changes update the database schema
+  * Who: Jackson. Time: 10 minutes. When: Claude says the first migration is pushed.
+  * Why: database changes are applied by Supabase itself when code reaches the right branch, so no database password ever sits in GitHub, and staging always gets a change before production.
+  * Start: https://supabase.com/dashboard, project `jakoa-crm-staging`, **Project Settings**, **Integrations**, **GitHub**.
+  * Steps:
+    1. **Connect**, authorize the Supabase GitHub app for `jakoa-crm` only. Supabase directory: `supabase`. Production branch: `staging`. Turn on **Deploy to production**. Turn off **Automatic branching** (preview databases cost extra).
+    2. Repeat in `jakoa-crm-production` with production branch `main`.
+  * Produces: nothing to copy.
 
 * [ ] **GH2** GitHub Pro and a rule that protects `main` (only if D1 approves it)
   * Who: Jackson. Time: 10 minutes. Cost: US$4 a month.
@@ -326,9 +335,9 @@ Last checked against the vendors' current documentation: 22 November 2026.
 * [ ] **PK1** Passkeys, backup codes and recovery codes for both of you
   * Who: Jackson and Noah, each on their own devices. Time: 15 minutes each.
   * Why: passkeys are the only way into the CRM. No SMS codes exist, so the recovery codes are the only way back in if you lose every device.
-  * Start: the invite email from the CRM (sent to info@jakoa.ca and noah@jakoa.ca when phase 1 is live).
+  * Start: Jackson uses the one time setup link (Claude gives you a setup token to put in Vercel and the link to open). Noah uses the invite link Jackson creates in the CRM (**Settings**, **People**, **Invite**) and sends to Noah by text; no email is involved.
   * Steps:
-    1. Open the invite link on your phone. When asked, create a passkey (Face ID or fingerprint). It syncs through iCloud Keychain or Google Password Manager.
+    1. Open your link on your phone. When asked, create a passkey (Face ID or fingerprint). It syncs through iCloud Keychain or Google Password Manager.
     2. Sign in on your laptop and add a second passkey there (**Account**, **Security**, **Add passkey**).
     3. Add an authenticator app as backup (**Add authenticator**), scan the QR code, type the six digit code.
     4. Click **Recovery codes**, print them, and keep the paper somewhere safe at home (with the backup encryption key from BK1). Also store them in the password manager.
@@ -533,7 +542,7 @@ Claude will tell you when to start this section. GC items are done twice: once i
   * Steps: call the tracking number from another phone; both your cells should ring. Hang up once unanswered: a deal and an urgent task appear, and the caller gets one text. Tell Claude the result.
 
 * [ ] **META1** Meta: create the app under Jackson's own profile
-  * Who: Jackson, logged in to his own personal Facebook profile, never the shared "Noah Jackson" account. Time: 30 minutes.
+  * Who: Jackson, logged in to Jackson's own personal Facebook profile, never the shared "Noah Jackson" account. Time: 30 minutes.
   * Start: https://developers.facebook.com/apps
   * Steps:
     1. **Create app**. Name "Jakoa CRM", contact email info@jakoa.ca. Choose the use cases for Messenger (engage with customers on Messenger) and Instagram (manage messaging and content on Instagram). Link the business portfolio "Productions Jakoa".
@@ -572,7 +581,7 @@ Claude will tell you when to start this section. GC items are done twice: once i
   * Produces: nothing to copy.
 
 * [ ] **MCP1** Add the CRM to Claude as custom connectors
-  * Who: Jackson (Noah too if he uses Claude). Time: 5 minutes.
+  * Who: Jackson (and Noah, if Noah uses Claude). Time: 5 minutes.
   * Steps:
     1. https://claude.ai, **Settings**, **Connectors**, **Add custom connector**: name "Jakoa CRM", URL `https://crm.jakoa.ca/mcp`. **Add**, **Connect**, sign in with your passkey, approve.
     2. Add a second one: "Jakoa CRM outreach", URL `https://crm.jakoa.ca/mcp/outreach`. This one only gets outreach tools; use it for the daily outreach skill.
